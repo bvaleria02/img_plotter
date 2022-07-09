@@ -27,8 +27,8 @@ int image_drawLine(IMG *image, COLOR *col, int x1, int y1, int x2, int y2){
 	int x = x1;
 	int y = y1;
 	int c = (col->r << 0) + (col->g << 8) + (col->b << 16) + (col->a << 24);
-	int yn = y2;
-	int dfy = y2;
+	int yn = y1;
+	int dfy = 0;
 	
 	for(int i = 0; i < abs(x2 - x1); i++){
 		x = x1 + i;
@@ -81,3 +81,63 @@ int image_drawRect(IMG *image, COLOR *col, int x1, int y1, int x2, int y2){
 	};
 	return 0;
 }
+
+
+int image_gradientX(IMG *image, COLOR *col1, COLOR *col2){
+
+	int r1 = col1->r;
+       	int g1 = col1->g;	
+       	int b1 = col1->b;	
+       	int a1 = col1->a;	
+
+	int r2 = col2->r;
+       	int g2 = col2->g;	
+       	int b2 = col2->b;	
+       	int a2 = col2->a;	
+
+	int c = 0;	
+
+	for(int x = 0; x < image->width; x++){
+			c =    ((r1 + x*(r2-r1)/image->width) << 0)  	
+			    +  ((g1 + x*(g2-g1)/image->width) << 8) 	
+			    +  ((b1 + x*(b2-b1)/image->width) << 16)  	
+			    +  ((a1 + x*(a2-a1)/image->width) << 24); 	
+				
+		for(int y = 0; y < image->length; y++){
+			image->raw[x+ (image->width * y) ] = c;
+		};
+	};
+
+	return 0;
+}
+
+
+int image_gradientY(IMG *image, COLOR *col1, COLOR *col2){
+
+	int r1 = col1->r;
+       	int g1 = col1->g;	
+       	int b1 = col1->b;	
+       	int a1 = col1->a;	
+
+	int r2 = col2->r;
+       	int g2 = col2->g;	
+       	int b2 = col2->b;	
+       	int a2 = col2->a;	
+
+	int c = 0;	
+
+	for(int y = 0; y < image->length; y++){
+			c =    ((r1 + y*(r2-r1)/image->length) << 0)  	
+			    +  ((g1 + y*(g2-g1)/image->length) << 8) 	
+			    +  ((b1 + y*(b2-b1)/image->length) << 16)  	
+			    +  ((a1 + y*(a2-a1)/image->length) << 24); 	
+				
+		for(int x = 0; x < image->width; x++){
+			image->raw[x + (image->width * y) ] = c;
+		};
+	};
+
+	return 0;
+}
+
+

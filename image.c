@@ -11,9 +11,19 @@ int main(){
 	image.width  =  2400;
 	image.length =  2400;
 	image.name   = "img";
-	colorSet(&color, 255, 255, 255, 255);
+	colorSet(&color, 0, 0, 0, 255);
 
 	generateBlank(&image, &color);
+	
+	COLOR col1;
+	COLOR col2;
+
+	colorSet(&col1, 78, 40, 76, 255);
+	colorSet(&col2, 103, 80, 23, 255);
+	
+	//image_gradientX(&image, &col1, &col2);
+	image_gradientY(&image, &col1, &col2);
+	
 	
 	// Some examples. Uncomment to see
 	
@@ -28,13 +38,25 @@ int main(){
 	};
 	colorSet(&color, 0, 0, 255, 255);
 	image_drawLine(&image, &color, 100, 400, 200, 2000);
-	*/	
-	for(int i = 0; i < 1920; i++){
+	*/
+
+
+
+	for(int i = 0; i < 1200; i++){
+	
+		colorSet(&color, 16+(i/50), 80+(i/15), 32+(i/32), 255);
+
+		image_drawLine(&image, &color, 1300+120*sin((400+i)/(float)720), 1440-(i/10), 2050, 2399);
+
+	};
+
+	
+	for(float i = 0; i < 2400; i += 0.5){
 		colorSet(
 				&color,
-				/* R */ 5*(i/80),
-				/* G */ abs(-255+10*(i/200)),
-				/* B */ 255 - 5*(i/140),
+				/* R */ 127 + (i/20),
+				/* G */ (i/10),
+				/* B */ 255-(i/10),
 				/* A */ 255
 				);
 		
@@ -42,14 +64,16 @@ int main(){
 		image_drawLine(
 				&image,
 				&color,
-				/* X1 */ 80+(i/4),
-				/* Y1 */ 1200+(800*(sin(i/(float)160)))+(360*sin(i/(float)220)),
-				/* X2 */ 2200-(i/32),
-				/* Y2 */ 1200+(i/5)
+				/* X1 */ 900 + ((2400-i)/3)*sin(i/(float)96),
+				/* Y1 */ 900 + ((i)/3)*cos((i+120)/(float)96),
+				/* X2 */ 1440,
+				/* Y2 */ 1440 
 				);
 	};	
 
-	subSampler(&image, 1);
+
+
+	subSampler(&image, 2);
 
 	imageWrite(&image);	
 	free(image.raw);
