@@ -141,3 +141,97 @@ int image_gradientY(IMG *image, COLOR *col1, COLOR *col2){
 }
 
 
+int image_drawPoly(IMG *image, COLOR *col, int x1, int y1, int x2, int y2, int x3, int y3){
+
+	int yn = 0;
+	int ym = 0;
+	int c = (col->r << 0) + (col->g << 8) + (col->b << 16) + (col->a << 24);
+	int s = 0;
+
+	if(x2 < x1){
+		x1 = x1 ^ x2;
+		x2 = x2 ^ x1;
+		x1 = x1 ^ x2;
+
+		y1 = y1 ^ y2;
+		y2 = y2 ^ y1;
+		y1 = y1 ^ y2;
+	};
+	if(x3 < x2){
+		x2 = x2 ^ x3;
+		x3 = x3 ^ x2;
+		x2 = x2 ^ x3;
+		
+		y2 = y2 ^ y3;
+		y3 = y3 ^ y2;
+		y2 = y2 ^ y3;
+	};
+	if(x2 < x1){
+		x1 = x1 ^ x2;
+		x2 = x2 ^ x1;
+		x1 = x1 ^ x2;
+
+		y1 = y1 ^ y2;
+		y2 = y2 ^ y1;
+		y1 = y1 ^ y2;
+	};
+
+	if((x2-x1) == 0) return 2;
+	if((x3-x1) == 0) return 2;
+	if((x3-x2) == 0) return 2;
+
+	for(int i = 0; i <= abs(x2-x1); i++){
+		yn = i*(y2-y1)/(float)(x2-x1);
+		ym = (i)*(y3-y1)/(float)(x3-x1);
+		s = (ym < yn);
+		for(int j = 0; j <= abs(ym-yn); j++){
+			if(s) image->raw[i+x1 + (image->width * (image->length + j-y1-yn))] = c;
+			else image->raw[i+x1 + (image->width * (image->length - j-y1-yn))] = c;
+		};
+	};
+
+	int yl = ym + y1;
+	for(int i = 0; i <= abs(x3-x2); i++){
+		yn = (i)   *((y3-y2)/(float)(x3-x2)) + y2;
+		ym = (i+(x2-x1))*((y3-y1)/(float)(x3-x1))+ y1 ; 
+		s = (ym < yn);
+		for(int j = 0; j <= abs(ym - yn); j++){
+			if (s) image->raw[i+x2 + (image->width * (image->length + j - yn))] = c;
+			else image->raw[i+x2 + (image->width * (image->length - j - yn))] = c;
+		};
+	};
+	return 0;
+}
+
+
+
+int image_drawCircle(IMG *image, COLOR *col, int x, int y, int r){
+	
+	int x1, x2, a;
+	int y1 = y - r;
+	int y2 = y + r;
+	int c = (col->r << 0) + (col->g << 8) + (col->b << 16) + (col->a << 24);
+	double PI = 3.14159265358979323846;
+	
+	for(int i = y1; i < y2; i++){
+		
+		if ( i < 0)             continue;
+		if ( (i-1) > image->length) break;
+		
+		// y = sqrt(r - x2)
+		x1 = x - r*sqrt(1 - ((i-x)/(float)r)*((i-x)/(float)r));
+		x2 = x + r*sqrt(1 - ((i-x)/(float)r)*((i-x)/(float)r));
+		
+		for(int j = x1; j <= x2; j++){
+			
+			if ( j < 0) continue;
+			if ( j > image->width) break;
+			a = i + image->width * (image->length-j);
+			if (a < 1) break;
+			image->raw[a] = c;	
+		};
+	};
+
+
+	return 0;
+}

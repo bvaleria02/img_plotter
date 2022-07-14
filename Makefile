@@ -2,8 +2,8 @@ all:
 
 c:
 	gcc -o $(name) $(name).c -lm -Wall
-	./$(name)
-
+	./$(name) $(w) $(h) $(n)
+	convert -size $(w)x$(h) -depth 8 rgba:$(n).raw result.png
 f:
 	gfortran -o $(name) $(name).f95 -Wall
 	./$(name)
